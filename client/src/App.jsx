@@ -5,16 +5,19 @@ import SignIn from "./pages/SignIn";
 import SignOut from "./pages/SignOut";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
+import Header from "./components/Header";
 
 const App = () => {
   return (
     <div
-      className="text-center bg-gray-500 min-h-screen flex flex-col font-bold "
-      style={{ fontFamily: "sans-serif" }}
+      className="text-center font-sans text-blue-500 bg-white min-h-screen flex flex-col "
     >
       <Router>
+
+      <Header />
+
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" exact element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-out" element={<SignOut />} />
