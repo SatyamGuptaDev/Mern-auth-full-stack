@@ -53,7 +53,7 @@ function Header() {
             </li>
             <li>
               <NavLink
-                to="/sign-out"
+                to="/sign-up"
                 className={({ isActive, isPending }) =>
                   isPending
                     ? "text-blue-500"
@@ -62,7 +62,7 @@ function Header() {
                     : "text-black"
                 }
               >
-                Sign Out
+                Sign Up
               </NavLink>
             </li>
             <li>
