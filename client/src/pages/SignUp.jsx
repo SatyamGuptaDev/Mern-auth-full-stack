@@ -1,3 +1,4 @@
+import { set } from "mongoose";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -10,18 +11,13 @@ function SignUp() {
   const [validEmail, setValidEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [validUsername, setValidUsername] = useState(false); // New state for valid username
+  const [validUsername, setValidUsername] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // Initialize error state to null
 
   const handleEye = () => {
     setShowPassword(!showPassword);
   };
-
-  const handlePassword = () => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{}|;:',<.>/?~`]).{8,}$/;
-    setValidPassword(regex.test(password));
-  };
-
 
   const handleEmail = (e) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,11 +26,51 @@ function SignUp() {
   };
 
   const handleUsername = (e) => {
-    // Validate username here (can be a simple length check or regex-based validation)
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/; // Example regex for username
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
     setValidUsername(usernameRegex.test(e.target.value));
     setUsername(e.target.value);
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null); // Reset error to null
+
+    const formData = {
+      username: username,
+      email: email,
+      password: password,
+    };
+
+    try {
+      setLoading(true);
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await res.json();
+
+      if (data.success) {
+        alert(data.message);
+      } 
+      else{
+        setError(true); // Set error to true if there's an error
+      }
+
+      setLoading(false);
+    } catch (err) {
+
+      setLoading(false);
+      setError(true);
+      console.log(err);
+
+    }
+  };
+
+
 
   return (
     <div className="text-black select-none">
@@ -42,7 +78,7 @@ function SignUp() {
         Sign Up
       </h1>
 
-      <form className="flex flex-col items-center">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center">
         <input
           type="text"
           placeholder="Username"
@@ -51,13 +87,19 @@ function SignUp() {
               ? validUsername
                 ? "border-green-500"
                 : "border-red-500"
-              : "border-gray-400"
+              : "border-gray-600"
           } rounded-md p-2 w-80 my-2 focus:outline-none`}
           onChange={handleUsername}
         />
 
-        <p className="text-xs text-red-400" style={{ display : validUsername || username.length ==0 ? "none" : "block" }}>
-          Username must have 3-20 characters and can <br/> only contain letters, numbers, and underscores
+        <p
+          className="text-xs text-red-400"
+          style={{
+            display: validUsername || username.length == 0 ? "none" : "block",
+          }}
+        >
+          Username must have 3-20 characters and can <br /> only contain
+          letters, numbers, and underscores
         </p>
 
         <input
@@ -68,7 +110,7 @@ function SignUp() {
               ? validEmail
                 ? "border-green-500"
                 : "border-red-500"
-              : "border-gray-400"
+              : "border-gray-600"
           } rounded-md p-2 w-80 my-2 focus:outline-none`}
           onChange={handleEmail}
         />
@@ -77,10 +119,12 @@ function SignUp() {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="border bg-transparent focus:outline-none border-gray-400 rounded-md p-2 min-w-80"
+            className="border bg-transparent focus:outline-none border-gray-600 rounded-md p-2 min-w-80"
             onChange={(e) => {
               setPassword(e.target.value);
-              handlePassword();
+              const regex =
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{}|;:',<.>/?~`]).{8,}$/;
+              setValidPassword(regex.test(e.target.value));
             }}
           />
 
@@ -88,12 +132,12 @@ function SignUp() {
             {showPassword ? (
               <FaEyeSlash
                 onClick={handleEye}
-                className="absolute top-1/2 right-2 transform -translate-y-1/2  -translate-x-1/2 text-gray-700 cursor-pointer"
+                className="absolute top-1/2 right-2 transform -translate-y-1/2  -translate-x-2 text-gray-700 cursor-pointer"
               />
             ) : (
               <FaEye
                 onClick={handleEye}
-                className="absolute top-1/2 right-2 transform -translate-y-1/2 -translate-x-1/2 text-gray-700 cursor-pointer"
+                className="absolute top-1/2 right-2 transform -translate-y-1/2  -translate-x-2 text-gray-700 cursor-pointer"
               />
             )}
           </div>
@@ -151,7 +195,7 @@ function SignUp() {
               ? confirmPassword === password
                 ? `border rounded-md p-2 w-80 my-2 b-3 border-green-500 focus:outline-none`
                 : `border rounded-md p-2 w-80 my-2  b-3 border-red-500 focus:outline-none`
-              : `border rounded-md p-2 w-80 my-2 b-3 border-gray-400 focus:outline-none`
+              : `border rounded-md p-2 w-80 my-2 b-3 border-gray-600 focus:outline-none`
           }
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
@@ -164,7 +208,8 @@ function SignUp() {
               validPassword &&
               validEmail &&
               password === confirmPassword &&
-              validUsername // Include validUsername in the conditions
+              validUsername &&
+              !loading
                 ? "#2563EB"
                 : "#A5B4FC",
           }}
@@ -172,15 +217,18 @@ function SignUp() {
             !validPassword ||
             !validEmail ||
             password !== confirmPassword ||
-            !validUsername || // Include validUsername in the conditions
+            !validUsername ||
             username === "" ||
             email === "" ||
             password === "" ||
-            confirmPassword === ""
+            confirmPassword === "" ||
+            loading
           }
         >
-          Sign Up
+          {loading ? "Loading..." : "Sign Up"}
         </button>
+
+        <p className="text-red-400">{error && "Something went wrong!"}</p>
       </form>
 
       <div className="text-black text-center mt-5">
