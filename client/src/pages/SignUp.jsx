@@ -59,8 +59,9 @@ function SignUp() {
       else{
         setError(true); // Set error to true if there's an error
       }
-
       setLoading(false);
+
+
     } catch (err) {
 
       setLoading(false);

@@ -7,6 +7,9 @@ function SignIn() {
   const [validEmail, setValidEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // Initialize error state to null
+
 
   const handleEye = () => {
     setShowPassword(!showPassword);
@@ -18,13 +21,55 @@ function SignIn() {
     setEmail(e.target.value);
   };
 
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null); // Reset error to null
+
+    const formData = {
+      email: email,
+      password: password,
+    };
+
+    try {
+      setLoading(true);
+      
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await res.json();
+
+      if (data.success) {
+        alert(data.message);
+      } 
+      else{
+        setError(data.message); // Set error to true if there's an error
+      }
+
+      setLoading(false);
+    } catch (err) {
+
+      setLoading(false);
+      setError(err);
+      console.log(err);
+
+    }
+  };
+
+
   return (
     <div className="text-black select-none">
       <h1 className="text-black text-3xl text-center font-semibold my-7">
         Sign In
       </h1>
 
-      <form className="flex flex-col items-center">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center">
         <input
           type="email"
           placeholder="Email"
@@ -33,7 +78,7 @@ function SignIn() {
               ? validEmail
                 ? "border-green-500"
                 : "border-red-500"
-              : "border-gray-400"
+              : "border-gray-600"
           } rounded-md p-2 w-80 my-2 focus:outline-none`}
           onChange={handleEmail}
         />
@@ -42,7 +87,7 @@ function SignIn() {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="border bg-transparent border-gray-400 rounded-md p-2 min-w-80 focus:outline-none"
+            className="border bg-transparent border-gray-600 rounded-md p-2 min-w-80 focus:outline-none"
             onChange={(e) => setPassword(e.target.value)}
           />
 
@@ -63,12 +108,21 @@ function SignIn() {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white rounded-md p-2 w-80 my-2"
-          // Implement your Sign In logic here
-          disabled={!validEmail || password === ""}
+          className={`bg-blue-500 text-white rounded-md p-2 w-80 my-2 focus:outline-none ${
+            !validEmail || loading || password === ""
+              ? "cursor-not-allowed bg-blue-200"
+              : "hover:bg-blue-600"
+          }`}
+          disabled={!validEmail || loading || password === ""}
         >
-          Sign In
+          {loading ? "Loading..." : "Sign In"}
         </button>
+
+        <p className="text-red-500">
+          {error ? error.message : ""}
+        </p>
+
+        
       </form>
 
       <div className="text-black text-center mt-5">
