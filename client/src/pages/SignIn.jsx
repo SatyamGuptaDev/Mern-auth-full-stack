@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice.js';
+import OAuth from "../components/OAuth.jsx";
 
 function SignIn() {
 
@@ -93,6 +94,10 @@ function SignIn() {
           onChange={handleEmail}
         />
 
+        <p className=" text-xs  text-red-500">
+          {email.length>0 ? (validEmail ? "" : "Invalid Email Format") : ""}
+        </p>
+
         <div className="text-black flex flex-row items-center gap-2 w-80 my-1">
           <input
             type={showPassword ? "text" : "password"}
@@ -134,6 +139,8 @@ function SignIn() {
 
         
       </form>
+
+      <OAuth />
 
       <div className="text-black text-center mt-5">
         Don't have an account?{" "}

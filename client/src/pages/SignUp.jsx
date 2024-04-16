@@ -2,6 +2,7 @@ import { set } from "mongoose";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import OAuth from "../components/OAuth";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -50,28 +51,23 @@ function SignUp() {
         },
         body: JSON.stringify(formData),
       });
-      
+
       const data = await res.json();
 
       if (data.success) {
         alert(data.message);
-      } 
-      else{
+      } else {
         setError(true); // Set error to true if there's an error
       }
       setLoading(false);
-
-
     } catch (err) {
-
       setLoading(false);
       setError(true);
       console.log(err);
-
     }
   };
 
-
+  
 
   return (
     <div className="text-black select-none">
@@ -115,6 +111,10 @@ function SignUp() {
           } rounded-md p-2 w-80 my-2 focus:outline-none`}
           onChange={handleEmail}
         />
+
+        <p className=" text-xs  text-red-500">
+          {email.length > 0 ? (validEmail ? "" : "Invalid Email Format") : ""}
+        </p>
 
         <div className="text-black flex flex-row items-center gap-2 w-80 my-1">
           <input
@@ -231,6 +231,8 @@ function SignUp() {
 
         <p className="text-red-400">{error && "Something went wrong!"}</p>
       </form>
+
+      <OAuth />
 
       <div className="text-black text-center mt-5">
         Already have an account?{"   "}
