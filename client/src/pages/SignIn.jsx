@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice.js';
 
 function SignIn() {
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { loading, error } = useSelector((state) => state.user);
+
   const [showPassword, setShowPassword] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // Initialize error state to null
+
 
 
   const handleEye = () => {
@@ -25,7 +33,7 @@ function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Reset error to null
+    dispatch(signInStart());
 
     const formData = {
       email: email,
@@ -33,8 +41,6 @@ function SignIn() {
     };
 
     try {
-      setLoading(true);
-      
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -46,21 +52,25 @@ function SignIn() {
       const data = await res.json();
 
       if (data.success) {
+        console.log(data.data);
         alert(data.message);
+        dispatch(signInSuccess(data.data));
       } 
       else{
-        setError(data.message); // Set error to true if there's an error
+        dispatch(signInFailure(data));
       }
+      
 
-      setLoading(false);
     } catch (err) {
-
-      setLoading(false);
-      setError(err);
-      console.log(err);
+      dispatch(signInFailure(err));
 
     }
   };
+
+
+
+
+
 
 
   return (
@@ -119,7 +129,7 @@ function SignIn() {
         </button>
 
         <p className="text-red-500">
-          {error ? error.message : ""}
+          {error ? (error.message ? error.message : "Some error occured") : ""}
         </p>
 
         
