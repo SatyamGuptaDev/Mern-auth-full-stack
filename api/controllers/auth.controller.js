@@ -44,7 +44,7 @@ export const signin = async (req, res, next) => {
         const { password: userPassword, ...userWithoutPassword } = user._doc;
 
         // Set the cookie and send response in one call
-        res.cookie('access_token', token, { httpOnly: true })
+        res.cookie('access_token', token, { httpOnly: true, maxAge: 3600000 }) // 1 hour
             .status(200)
             .json({ message: "User logged in successfully", success: true, data: userWithoutPassword });
 
