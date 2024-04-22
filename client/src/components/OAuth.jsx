@@ -7,6 +7,7 @@ import { signInWithPopup, GoogleAuthProvider, getAuth } from 'firebase/auth';
 import { app } from '../firebase.js';
 import {useDispatch} from 'react-redux';
 import {signInStart, signInSuccess, signInFailure} from '../redux/user/userSlice.js'
+import { Navigate } from 'react-router-dom';
 
 function OAuth() {
 
@@ -35,6 +36,7 @@ function OAuth() {
             const data = await res.json();
 
             dispatch(signInSuccess(data));
+            
 
         } catch (err) {
             console.log(err);

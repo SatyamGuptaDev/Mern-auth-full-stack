@@ -1,8 +1,9 @@
 import { set } from "mongoose";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { useSelector } from "react-redux";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,12 +61,22 @@ function SignUp() {
         setError(true); // Set error to true if there's an error
       }
       setLoading(false);
+
     } catch (err) {
       setLoading(false);
       setError(true);
       console.log(err);
     }
   };
+
+  const user = useSelector((state) => state.user.currentUser);
+  
+  useEffect(() => {
+    if (user) {
+      window.location.href = "/";
+    }
+  }, [user]);
+
 
   
 

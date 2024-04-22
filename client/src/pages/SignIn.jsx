@@ -11,6 +11,8 @@ function SignIn() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+
+
   const { loading, error } = useSelector((state) => state.user);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -69,6 +71,14 @@ function SignIn() {
   };
 
 
+
+  const user = useSelector((state) => state.user.currentUser);
+  
+  useEffect(() => {
+    if (user) {
+      window.location.href = "/";
+    }
+  }, [user]);
 
 
 
