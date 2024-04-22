@@ -1,11 +1,13 @@
+// Import statements
 import React from "react";
-import { Route, Navigate, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Outlet, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux"; // Corrected import
 
-function PrivateRoute({ element, ...rest }) {
+// PrivateRoute Component
+function PrivateRoute({ element }) {
   const user = useSelector((state) => state.user.currentUser);
 
-  return user ? <Outlet/ : <Navigate to="/sign-in" />;
+  return <>{user ? element : <Navigate to="/sign-in" />}</>;
 }
 
 export default PrivateRoute;
